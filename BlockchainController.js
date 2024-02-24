@@ -16,7 +16,26 @@ class BlockchainController {
         this.submitStar();
         this.getBlockByHash();
         this.getStarsByOwner();
+        this.requestValidation();
     }
+
+    // Enpoint to validate chain
+    requestValidation() {
+
+        this.app.get("/requestValidation", async (req, res) => {
+            console.log ("BlockchainController.requestValidation:", "Start..");
+
+            //Validate chain
+            let errorBlockList = await this.blockchain.validateChain();
+
+            if (errorBlockList.length == 0) {
+                return res.status(200).send("The chain is valid.");
+            } else {
+                return res.status(404).send("The chain is not valid.");
+            }
+        });
+    }
+
 
     // Enpoint to Get a Block by Height (GET Endpoint)
     getBlockByHeight() {
@@ -41,7 +60,7 @@ class BlockchainController {
 
     // Endpoint that allows user to request Ownership of a Wallet address (POST Endpoint)
     requestOwnership() {
-        this.app.post("/requestValidation", async (req, res) => {
+        this.app.post("/requestOwnership", async (req, res) => {
  	    console.log ("BlockchainController.requestOwnership:", "Start..");
 
             if(req.body.address) {
